@@ -30,25 +30,31 @@ if __name__ == '__main__':
 
     # Création du premier histogramme en utilisant plotly express
     fig1 = px.histogram(natural_disaster_df, x="Total Deaths",
-                       title="Distribution du nombre total de décès dus aux catastrophes naturelles",
-                       nbins=50,  # Utilisation de 50 intervalles pour l'histogramme
-                       log_y=True
-                       )
+                   color="Disaster Subgroup",
+                   title="Histogramme global du nombre total de décès dus aux catastrophes naturelles",
+                   nbins=50,  # Utilisation de 50 intervalles pour l'histogramme
+                   log_y=True,
+                   hover_data=["Disaster Subgroup"]
+                   )
 
     # Filtrage des données pour inclure uniquement les décès entre 0 et 100,000
-    filtered_data = natural_disaster_df[(natural_disaster_df["Total Deaths"] > 0) & 
-                                        (natural_disaster_df["Total Deaths"] <= 100000)]
+    filtered_data_for_fig2 = natural_disaster_df[(natural_disaster_df["Total Deaths"] >= 0) & 
+                                        (natural_disaster_df["Total Deaths"] <= 10000)]
+
 
     # Création du second histogramme avec les données filtrées
-    fig2 = px.histogram(filtered_data, x="Total Deaths",
-                       title="Distribution des décès (0 à 100,000) dus aux catastrophes naturelles",
-                       nbins=50,
-                       log_y=True)
+    fig2 = px.histogram(filtered_data_for_fig2, x="Total Deaths",
+                       color="Disaster Subgroup",
+                       title="Histogramme des décès (0 à 10,000) dus aux catastrophes naturelles",
+                       nbins=100,
+                       log_y=True,
+                       hover_data=["Disaster Subgroup"]
+                       )
 
     # Structure de la mise en page du tableau de bord
     app.layout = html.Div(children=[
         # Ajout d'un titre au tableau de bord pour le premier histogramme
-        html.H1(children='Distribution des décès dus aux catastrophes naturelles',
+        html.H1(children='Histogramme des décès dus aux catastrophes naturelles',
                 style={'textAlign': 'center', 'color': '#7FDBFF'}),
 
         # Intégration du premier histogramme dans le dashboard
@@ -58,7 +64,7 @@ if __name__ == '__main__':
         ),
 
         # Ajout d'un titre pour le second histogramme
-        html.H1(children='Distribution des décès (0 à 100,000) dus aux catastrophes naturelles',
+        html.H1(children='Histogramme des décès (0 à 100,000) dus aux catastrophes naturelles',
                 style={'textAlign': 'center', 'color': '#7FDBFF'}),
 
         # Intégration du second histogramme dans le dashboard
