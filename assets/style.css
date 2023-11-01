@@ -1,0 +1,85 @@
+/* Style pour le corps entier */
+body, .dash-content * {
+    background-color: #343a40;  /* Couleur sombre */
+    font-family: 'Calibri', sans-serif !important;  /* Utilisation de la police Montserrat */
+    color: white !important;  /* Tous les textes seront en blanc */
+}
+
+/* Style pour le menu de navigation */
+.bg-dark {
+    background-color: #2C3E50 !important;
+}
+
+.text-light {
+    color: #ECF0F1 !important;
+}
+
+.p-3 {
+    padding: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+.marge_top {
+    margin-top: 1.5rem !important;
+}
+.shadow-2 {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bg-secondary {
+    background-color: #343a40 !important;
+}
+
+.couleur_titre {
+    color : #d18f00 !important;
+}
+
+.description_color {
+    color :#bc1a1a;
+}
+
+.subtitle_color {
+    color :#19a320;
+}
+
+.sidebar {
+    height: 100vh;
+    overflow-y: auto; /* Ajoute un défilement vertical si nécessaire */
+}
+
+/* Style pour les liens du menu de navigation */
+.sidebar a {
+    color: white !important;  /* Couleur de texte blanc pour les liens */
+}
+
+.sidebar a:hover {
+    color: #1abcbc !important;  /* Couleur de texte lors du survol */
+}
+
+
+/* Supprimez les gouttières */
+.row > .col {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Style pour le curseur RangeSlider */
+.RangeSlider .rc-slider-track {
+    background-color: #bc701a !important;  /* Couleur de la barre sélectionnée */
+}
+.RangeSlider .rc-slider-dot {
+    border-color: #bcac1a !important;  /* Couleur de la bordure des points sous le curseur */
+}
+
+.RangeSlider .rc-slider-dot-active {
+    border-color: #d8cb12 !important;  /* Couleur de la bordure des points actifs sous le curseur */
+    Background-color: #d8cb12 !important;
+}
+
+.RangeSlider .rc-slider-handle {
+    border: solid 1px #bc1a1a !important;  /* Couleur de la bordure du curseur */
+    background-color: #660d0d !important;  /* Couleur de fond du curseur */
+}
+

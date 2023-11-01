@@ -1,17 +1,37 @@
 from dash import dcc, html
+import dash_bootstrap_components as dbc
 
-layout = html.Div([
-    # Menu sur le côté gauche
-    html.Div([
-        dcc.Tabs(id='tabs', value='home', children=[
-            dcc.Tab(label='Home', value='home'),
-            dcc.Tab(label='Cartes des catastrophes', value='map'),
-            dcc.Tab(label='Histogrammes des morts', value='histogram'),
-            dcc.Tab(label='Graphique 3', value='graph3'),
-            dcc.Tab(label='Graphique 4', value='graph4'),
-        ]),
-    ], style={'width': '20%', 'float': 'left'}),
+# Sidebar
+sidebar = dbc.Nav(
+    [
+        dbc.NavItem(dbc.NavLink("Home", href="/home", id="home-link", style={"font-size": "20px", "margin-bottom": "10px"})),
+        dbc.NavItem(dbc.NavLink("Cartes des catastrophes", href="/map", id="map-link", style={"font-size": "20px", "margin-bottom": "10px"})),
+        dbc.NavItem(dbc.NavLink("Histogrammes des morts", href="/histogram", id="histogram-link", style={"font-size": "20px", "margin-bottom": "10px"})),
+        dbc.NavItem(dbc.NavLink("Graphique 3", href="/graph3", id="graph3-link", style={"font-size": "20px", "margin-bottom": "10px"})),
+        dbc.NavItem(dbc.NavLink("Graphique 4", href="/graph4", id="graph4-link", style={"font-size": "20px", "margin-bottom": "10px"})),
+    ],
+    vertical=True,
+    pills=True,
+    className="sidebar text-center bg-dark p-3 shadow-2 marge_top",  # Fond sombre avec ombres et texte clair pour le menu
+)
 
-    # Contenu principal
-    html.Div(id='content', style={'width': '75%', 'float': 'right'})
-])
+# Titre
+title = html.H1("Données sur les catastrophes naturelles", className="mb-4 text-center bg-dark p-3 shadow-2 couleur_titre marge_top")
+
+layout = dbc.Container(
+    [
+        dbc.Row(
+            [
+                dbc.Col(sidebar, width=2),  # Sidebar a une largeur fixe de 2
+                dbc.Col([
+                    title,  # Titre au-dessus du contenu
+                    html.Div(id='content', className="text-center bg-dark text-light p-3 shadow-2")
+                ], width=10),  # Contenu principal prend le reste de l'espace
+            ],
+            
+            className="flex-nowrap",  # Force les colonnes à ne pas passer à la ligne
+        ),
+    ],
+    fluid=True,
+    className="d-flex flex-column vh-100 bg-secondary",  # La hauteur est basée sur la hauteur de la fenêtre
+)

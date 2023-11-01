@@ -1,6 +1,7 @@
 import folium
 import plotly_express as px
 
+import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from config import *
@@ -8,28 +9,45 @@ from main import app
 
 @app.callback(
     Output('content', 'children'),
-    [Input('tabs', 'value')]
+    [Input("home-link", "n_clicks"),
+     Input("map-link", "n_clicks"),
+     Input("histogram-link", "n_clicks"),
+     Input("graph3-link", "n_clicks"),
+     Input("graph4-link", "n_clicks")]
 )
-def update_content(tab):
-    if tab == 'home':
-        return html.Div([
-            html.H3("Bienvenue sur le Dashboard"),
-            html.P("Veuillez sélectionner un onglet pour afficher son contenu.")
-        ])
-    elif tab == 'map':
-        return generate_map_content()
-    elif tab == 'histogram':
-        return generate_histogram_content()
-    elif tab == 'graph3':
-        return generate_graph3_content()
-    elif tab == 'graph4':
-        return generate_graph4_content()
+def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, graph3_link_clicks, graph4_link_clicks):
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        return generate_home_content()
+    else:
+        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+        if button_id == "home-link":
+            return generate_home_content()
+        elif button_id == "map-link":
+            return generate_map_content()
+        elif button_id == "histogram-link":
+            return generate_histogram_content()
+        elif button_id == "graph3-link":
+            return generate_graph3_content()
+        elif button_id == "graph4-link":
+            return generate_graph4_content()
+
+
+def generate_home_content():
+    return html.Div([
+        html.H2("Bienvenue sur le Dashboard",style={'textAlign': 'center'},
+            className= 'subtitle_color'),
+        # (Insérez votre graphique 4 ou autres éléments ici)
+    ])
+
     # Définition de la fonction de mise à jour en réponse à la sélection de l'utilisateur
 def generate_map_content():
     # Votre code pour générer la carte
     return html.Div(children=[
-        html.H1(children=f'Carte des catastrophes naturelles'),
+        html.H2(children=f'Carte des catastrophes naturelles',style={'textAlign': 'center',},
+            className= 'subtitle_color'),
         dcc.RangeSlider(id='annees',
+                        className='RangeSlider',
                         marks={str(year): str(year) for year in annees if year %10 == 0},
                         min=min(annees),
                         max=max(annees),
@@ -105,12 +123,14 @@ def generate_histogram_content():
     # Votre code pour générer l'histogramme
     return html.Div(children=[
     # Titre
-    html.H1(children='Histogramme des décès dus aux catastrophes naturelles',
-            style={'textAlign': 'center', 'color': '#7FDBFF'}),
+    html.H2(children='Histogramme des décès dus aux catastrophes naturelles',
+            style={'textAlign': 'center'},
+            className= 'subtitle_color'),
     
     # RangeSlider pour sélectionner la plage d'années
     dcc.RangeSlider(
         id='year-slider',
+        className='RangeSlider',
         min=min(annees),
         max= max(annees),
         value=[min(annees),max(annees)],
@@ -129,7 +149,7 @@ def generate_histogram_content():
     html.Div(children=f'''
         Les histogrammes représentent la distribution du nombre total de décès 
         dus aux catastrophes naturelles.
-    ''')
+    ''', className= 'description_color text-center p-3 marge_top')
 ])
 
 # Rappel pour mettre à jour les histogrammes en fonction de la sélection de l'année
@@ -190,13 +210,15 @@ def update_histogram(selected_years):
 
 def generate_graph3_content():
     return html.Div([
-        html.H3("Graphique 3"),
+        html.H2("Graphique 3",style={'textAlign': 'center',},
+            className= 'subtitle_color'),
         # (Insérez votre graphique 3 ou autres éléments ici)
     ])
 
 def generate_graph4_content():
     return html.Div([
-        html.H3("Graphique 4"),
+        html.H2("Graphique 4",style={'textAlign': 'center',},
+            className= 'subtitle_color'),
         # (Insérez votre graphique 4 ou autres éléments ici)
     ])
 

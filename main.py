@@ -2,7 +2,9 @@ import dash
 from config import *
 from layout import layout
 
-app = dash.Dash(__name__, suppress_callback_exceptions=True)
+import dash_bootstrap_components as dbc
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])#suppress_callback_exceptions=True)
 
 from callbacks import *
 
