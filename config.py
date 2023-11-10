@@ -28,3 +28,20 @@ marqueur_type_de_catastrophe = {
     'Animal accident': {'color': 'green', 'icon': 'leaf'},
     'Glacial lake outburst': {'color': 'lightblue', 'icon': 'tint'}
 }
+
+    # dans config normalement
+
+    ################################################
+df_castrophe_country = natural_disaster_df.dropna(subset=['ISO','Year'])
+disaster_counts = df_castrophe_country.groupby(['Year', 'ISO']).size().reset_index(name='Disaster Count')
+
+
+
+disaster_death_counts = df_castrophe_country.groupby(['Year', 'ISO'])['Total Deaths'].sum().reset_index(name='Death Count')
+
+
+
+# Chemin vers le fichier GeoJSON qui contient les frontières des pays
+country_geojson = 'countries.geojson'  
+    ################################################
+
