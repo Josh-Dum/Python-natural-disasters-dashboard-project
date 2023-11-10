@@ -2,6 +2,7 @@ import pandas as pd
 
 natural_disaster_df = pd.read_csv('natural_disaster.csv')
 df_geoloc = pd.read_csv("new_dataframe.csv")
+global_temp_data = pd.read_csv('Global Temperature.csv')
 
 natural_disaster_df['Latitude'],natural_disaster_df['Longitude'] = df_geoloc['Latitude'],df_geoloc['Longitude']
 df_catastrophe_location = natural_disaster_df.dropna(subset=['Latitude', 'Longitude'])

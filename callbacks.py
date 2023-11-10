@@ -1,6 +1,8 @@
 import folium
 import plotly_express as px
 import dash
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 from dash import dcc, html
 from dash.dependencies import Input, Output
 
@@ -212,10 +214,52 @@ def update_histogram(selected_years):
     return fig1, fig2, fig3, fig4
 
 def generate_graph3_content():
+
+    # Nettoyage et préparation des données de température
+    global_temp_data.columns = global_temp_data.columns.str.strip()
+    annual_anomaly_data = global_temp_data[['Year', 'Annual Anomaly']].dropna(subset=['Annual Anomaly'])
+    annual_anomaly_data = annual_anomaly_data[(annual_anomaly_data['Year'] >= 1900) & (annual_anomaly_data['Year'] <= 2021)]
+    annual_anomaly_data['Smoothed Anomaly'] = annual_anomaly_data['Annual Anomaly'].rolling(window=50, center=True).mean()
+
+    # Préparation des données de catastrophes naturelles
+    disaster_count_per_year = natural_disaster_df.groupby('Year').size()
+    disaster_count_by_type = natural_disaster_df.groupby(['Year', 'Disaster Type']).size().unstack().fillna(0)
+
+    # Création du premier graphique avec deux axes y
+    fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Ajout des courbes au premier graphique
+    fig1.add_trace(
+        go.Scatter(x=disaster_count_per_year.index, y=disaster_count_per_year, mode='lines', name='Nombre de catastrophes'),
+        secondary_y=False,
+    )
+
+    fig1.add_trace(
+        go.Scatter(x=annual_anomaly_data['Year'], y=annual_anomaly_data['Smoothed Anomaly'], mode='lines', name='Écart de température'),
+        secondary_y=True,
+    )
+
+    # Mise à jour des titres et des axes du premier graphique
+    fig1.update_layout(
+        title_text="Nombre de catastrophes naturelles et écart de température (par rapport à l\'air pré-industrielle) par an"
+    )
+
+    fig1.update_xaxes(title_text="Année")
+    fig1.update_yaxes(title_text="Nombre de catastrophes", secondary_y=False)
+    fig1.update_yaxes(title_text="Écart de température", secondary_y=True)
+
+    # Création du deuxième graphique (Évolution par type de catastrophe)
+    fig2 = go.Figure()
+
+    for disaster_type in disaster_count_by_type.columns:
+        fig2.add_trace(go.Scatter(x=disaster_count_by_type.index, y=disaster_count_by_type[disaster_type], mode='lines', name=disaster_type))
+
+    fig2.update_layout(title_text="Nombre de catastrophes naturelles par type par an", xaxis_title="Année", yaxis_title="Nombre de catastrophes")
+
+
     return html.Div([
-        html.H2("Graphique 3",style={'textAlign': 'center',},
-            className= 'subtitle_color'),
-        # (Insérez votre graphique 3 ou autres éléments ici)
+        dcc.Graph(figure=fig1),
+        dcc.Graph(figure=fig2)
     ])
 
 def generate_graph4_content():
