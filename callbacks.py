@@ -1,6 +1,7 @@
 import folium
 import plotly_express as px
 import dash
+import numpy as np
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from dash import dcc, html
@@ -263,6 +264,7 @@ def generate_graph3_content():
     ])
 
 def generate_graph4_content():
+    
     return html.Div(children=[
         html.H2(children=f'Carte catastrophe',style={'textAlign': 'center',},
             className= 'subtitle_color'),
@@ -277,7 +279,9 @@ def generate_graph4_content():
         html.Div(id='map_2'),
         html.H3(children = f'''
                 On peut décocher et cocher en haut a droite pour voir seulement le nombre de catastrophes par pays ou le nombres de morts par pays.
-                ''', className='description_color text-center p-3 marge_top')
+                ''', className='description_color text-center p-3 marge_top'),
+        html.H1('Treemap des morts causé par les catastrophes naturelles'),
+        dcc.Graph(id='treemap-natural-disaster')
     ])
 
 @app.callback(
@@ -331,3 +335,37 @@ def update_map_2(year_range):
     # Enregistre la carte dans un fichier HTML et la retourne pour l'affichage dans Dash
     carte_html = carte._repr_html_()
     return html.Iframe(srcDoc=carte_html, width='100%', height='600px')
+
+# Callback pour mettre à jour le graphique en fonction de la plage d'années sélectionnée
+@app.callback(
+    Output('treemap-natural-disaster', 'figure'),
+    [Input('range_annees', 'value')]
+)
+def update_treemap_graph_4(selected_years):
+    filtered_data = natural_disaster_df[(natural_disaster_df['Year'] >= selected_years[0]) & 
+                                          (natural_disaster_df['Year'] <= selected_years[1])]
+
+    grouped_data = filtered_data.groupby(['Continent', 'Country']).agg(
+        Total_Deaths=('Total Deaths', 'sum'),
+        Total_Disasters=('Seq', 'count')
+    ).reset_index()
+
+    grouped_data['Log_Total_Deaths'] = np.log1p(grouped_data['Total_Deaths'])
+
+    fig = px.treemap(grouped_data, path=[px.Constant("world"), 'Continent', 'Country'], values='Total_Disasters',
+                     color='Log_Total_Deaths', hover_data=['Total_Deaths'],
+                     color_continuous_scale='RdBu_r')
+
+    fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
+
+    tickvals = [np.log1p(x) for x in [1, 10, 100, 1000, 10_000, 100_000, 1_000_000, 10_000_000]]
+    ticktext = ['1', '10', '100', '1k', '10k', '100k', '1M', '10M']
+    
+    fig.update_layout(
+        coloraxis_colorbar=dict(
+            tickvals=tickvals,
+            ticktext=ticktext
+        )
+    )
+
+    return fig
