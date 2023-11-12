@@ -414,12 +414,12 @@ def generate_graph5_content():
     Output('sunburst-plot', 'figure'),
     [Input('year-slider', 'value')]
 )
-def update_treemap_graph_5(selected_years):
+def update_graph5_content(selected_years):
     # Utiliser .loc pour filtrer le DataFrame et éviter SettingWithCopyWarning
     filtered_df = natural_disaster_df.loc[(natural_disaster_df['Year'] >= selected_years[0]) & (natural_disaster_df['Year'] <= selected_years[1])].copy()
     
     # Remplir les valeurs manquantes par des chaînes vides en utilisant .loc
-    for col in ['Disaster Group', 'Disaster Subgroup', 'Disaster Type', 'Disaster Subtype']:
+    for col in ['Disaster Group', 'Disaster Subgroup', 'Disaster Type', 'Disaster Subtype', 'Disaster Subsubtype']:
         filtered_df.loc[:, col] = filtered_df[col].fillna('')
 
     # Construire des identifiants uniques
@@ -427,9 +427,11 @@ def update_treemap_graph_5(selected_years):
     filtered_df['SubgroupId'] = filtered_df['GroupId'] + '-' + filtered_df['Disaster Subgroup']
     filtered_df['TypeId'] = filtered_df['SubgroupId'] + '-' + filtered_df['Disaster Type']
     filtered_df['SubtypeId'] = filtered_df['TypeId'] + '-' + filtered_df['Disaster Subtype']
+    filtered_df['SubsubtypeId'] = filtered_df['SubtypeId'] + '-' + filtered_df['Disaster Subsubtype']
 
     # Créer le diagramme en soleil
-    fig = px.sunburst(filtered_df, path=['GroupId', 'SubgroupId', 'TypeId', 'SubtypeId'], values='Total Deaths')
+    fig = px.sunburst(filtered_df, path=['GroupId', 'SubgroupId', 'TypeId', 'SubtypeId', 'SubsubtypeId'], values='Total Deaths')
     fig.update_layout(height=1000)
 
     return fig
+
