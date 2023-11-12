@@ -305,7 +305,7 @@ def generate_graph4_content():
 
     return html.Div(children=[
         # Titre de la section de la carte.
-        html.H2(children=f'Carte catastrophe',style={'textAlign': 'center'},
+        html.H2(children=f'Carte des catastrophes et morts',style={'textAlign': 'center'},
                 className= 'subtitle_color'),
 
         # Slider pour sélectionner la plage d'années.
@@ -327,7 +327,7 @@ def generate_graph4_content():
                 ''', className='description_color text-center p-3 marge_top'),
 
         # Titre de la section du treemap.
-        html.H2(children=f'Treemap des morts causé par les catastrophes naturelles',style={'textAlign': 'center'},
+        html.H2(children=f'Treemap des morts causés par les catastrophes naturelles',style={'textAlign': 'center'},
                 className= 'subtitle_color mb-4'),
 
         # Graphique Treemap.
