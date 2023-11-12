@@ -11,11 +11,15 @@ Avant de commencer, assurez-vous d'avoir :
 
 1. **Cloner le dépôt** : Ouvrez votre terminal et exécutez la commande suivante :
 
-   git clone [URL de votre dépôt Python]
+   ```bash
+   git clone https://git.esiee.fr/dumontjo/projet_dumont_vigier_dsia4101a_e4_natural_disaster
+   ```
 
 2. **Naviguer dans le dossier du projet** :
 
-   cd https://git.esiee.fr/dumontjo/projet_dumont_vigier_dsia4101c_e4_natural_disaster
+   ```
+   cd [nom du dossier]
+   ```
 
    Remplacez `[nom du dossier]` par le nom de votre dossier de projet cloné.
 
