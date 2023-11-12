@@ -20,9 +20,10 @@ from main import app
      Input("histogram-link", "n_clicks"),
      Input("graph3-link", "n_clicks"),
      Input("graph4-link", "n_clicks"),
-     Input("graph5-link", "n_clicks")]
+     Input("graph5-link", "n_clicks"),
+     Input("graph6-link", "n_clicks")]
 )
-def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, graph3_link_clicks, graph4_link_clicks, graph5_link_clicks):
+def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, graph3_link_clicks, graph4_link_clicks, graph5_link_clicks, graph6_link_clicks):
     ctx = dash.callback_context
     if not ctx.triggered:
         return generate_home_content()
@@ -40,6 +41,8 @@ def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, gra
             return generate_graph4_content()
         elif button_id == "graph5-link":
             return generate_graph5_content()
+        elif button_id == "graph6-link":
+            return generate_graph6_content()
         
 
 def generate_home_content():
@@ -434,4 +437,63 @@ def update_graph5_content(selected_years):
     fig.update_layout(height=1000)
 
     return fig
+
+def generate_graph6_content():
+    # Initialisation des graphiques avec des données par défaut ou vides
+    fig1 = go.Figure()  # Un graphique vide ou initialisé avec des données par défaut
+    fig2 = go.Figure()  # Un graphique vide ou initialisé avec des données par défaut
+
+    fig1.update_layout(title='Diagramme en Soleil - Catastrophes Naturelles', height=1000)
+    fig2.update_layout(title='Coût Total des Catastrophes par Année', height=600)
+
+    # Préparation des composants de l'interface utilisateur
+    return html.Div([
+        dcc.RangeSlider(
+            id='year-slider2',
+            min=natural_disaster_df['Year'].min(),
+            max=natural_disaster_df['Year'].max(),
+            value=[natural_disaster_df['Year'].min(), natural_disaster_df['Year'].max()],
+            marks={str(year): str(year) for year in range(natural_disaster_df['Year'].min(), natural_disaster_df['Year'].max() + 1, 10)},
+            step=1,
+            tooltip={"placement": "bottom", "always_visible": True}
+        ),
+        dcc.Graph(id='sunburst-plot2', figure=fig1),  # Graphique initial
+        dcc.Graph(id='cost-over-time-graph', figure=fig2)  # Autre graphique initial
+    ])
+
+
+
+@app.callback(
+    [Output('sunburst-plot2', 'figure'),
+     Output('cost-over-time-graph', 'figure')],
+    [Input('year-slider2', 'value')]
+)
+def update_graph6_content(selected_years):
+    # Filtrer le DataFrame en fonction de la plage d'années sélectionnée
+    filtered_df = natural_disaster_df.loc[(natural_disaster_df['Year'] >= selected_years[0]) & (natural_disaster_df['Year'] <= selected_years[1])].copy()
+
+    # Remplir les valeurs manquantes par des chaînes vides en utilisant .loc pour les colonnes hiérarchiques
+    for col in ['Disaster Group', 'Disaster Subgroup', 'Disaster Type', 'Disaster Subtype', 'Disaster Subsubtype']:
+        filtered_df.loc[:, col] = filtered_df[col].fillna('')
+
+    # Remplir les valeurs manquantes par 0 pour la colonne des coûts
+    filtered_df.loc[:, "Total Damages ('000 US$)"] = filtered_df["Total Damages ('000 US$)"].fillna(0)
+
+    # Construire des identifiants uniques
+    filtered_df['GroupId'] = filtered_df['Disaster Group']
+    filtered_df['SubgroupId'] = filtered_df['GroupId'] + '-' + filtered_df['Disaster Subgroup']
+    filtered_df['TypeId'] = filtered_df['SubgroupId'] + '-' + filtered_df['Disaster Type']
+    filtered_df['SubtypeId'] = filtered_df['TypeId'] + '-' + filtered_df['Disaster Subtype']
+    filtered_df['SubsubtypeId'] = filtered_df['SubtypeId'] + '-' + filtered_df['Disaster Subsubtype']
+
+    # Créer le diagramme en soleil avec le coût des catastrophes
+    fig1 = px.sunburst(filtered_df, path=['GroupId', 'SubgroupId', 'TypeId', 'SubtypeId', 'SubsubtypeId'], values="Total Damages ('000 US$)")
+
+    # Graphique de coût total des catastrophes par année
+    data_summarized = filtered_df.groupby('Year')['Total Damages (\'000 US$)'].sum().reset_index()
+    data_summarized.columns = ['Year', 'TotalCost']
+    fig2 = go.Figure(data=go.Scatter(x=data_summarized['Year'], y=data_summarized['TotalCost'], mode='lines+markers'))
+    fig2.update_layout(title='Coût Total des Catastrophes par Année', xaxis_title='Année', yaxis_title='Coût Total (en milliers de dollars US)', height=600)
+
+    return fig1, fig2
 
