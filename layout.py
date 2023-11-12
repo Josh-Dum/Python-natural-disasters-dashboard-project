@@ -9,6 +9,7 @@ sidebar = dbc.Nav(
         dbc.NavItem(dbc.NavLink("Histogrammes des morts", href="/histogram", id="histogram-link", style={"font-size": "20px", "margin-bottom": "10px"})),
         dbc.NavItem(dbc.NavLink("L'évolution des catastrophes", href="/graph3", id="graph3-link", style={"font-size": "20px", "margin-bottom": "10px"})),
         dbc.NavItem(dbc.NavLink("Le pays le plus sûr", href="/graph4", id="graph4-link", style={"font-size": "20px", "margin-bottom": "10px"})),
+        dbc.NavItem(dbc.NavLink("Catastrophes les plus meurtrières", href="/graph5", id="graph5-link", style={"font-size": "20px", "margin-bottom": "10px"})),
     ],
     vertical=True,
     pills=True,

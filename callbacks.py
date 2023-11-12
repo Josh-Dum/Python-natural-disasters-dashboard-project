@@ -19,9 +19,10 @@ from main import app
      Input("map-link", "n_clicks"),
      Input("histogram-link", "n_clicks"),
      Input("graph3-link", "n_clicks"),
-     Input("graph4-link", "n_clicks")]
+     Input("graph4-link", "n_clicks"),
+     Input("graph5-link", "n_clicks")]
 )
-def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, graph3_link_clicks, graph4_link_clicks):
+def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, graph3_link_clicks, graph4_link_clicks, graph5_link_clicks):
     ctx = dash.callback_context
     if not ctx.triggered:
         return generate_home_content()
@@ -37,6 +38,8 @@ def update_content(home_link_clicks, map_link_clicks, histogram_link_clicks, gra
             return generate_graph3_content()
         elif button_id == "graph4-link":
             return generate_graph4_content()
+        elif button_id == "graph5-link":
+            return generate_graph5_content()
         
 
 def generate_home_content():
@@ -369,3 +372,33 @@ def update_treemap_graph_4(selected_years):
     )
 
     return fig
+
+
+def generate_graph5_content():
+    
+    fig = go.Figure(data=[go.Sankey(
+    node=dict(
+    pad=15,
+    thickness=20,
+    line=dict(color="black", width=0.5),
+    label=labels,  # Labels de nœuds
+    #color=node_colors  # Couleurs des nœuds
+    ),
+    link=dict(
+      source=source,  # indices de la source
+      target=target,  # indices de la cible
+      value=value,  # valeurs correspondantes
+      color=link_colors # Couleurs des liens
+    ))])
+
+    fig.update_layout(title_text="Diagramme de Sankey", font_size=10, height=800)
+
+    return html.Div(children=[
+        html.H2(children=f'Sankey graph',style={'textAlign': 'center',},
+            className= 'subtitle_color'),
+        dcc.Graph(figure = fig),
+        html.Div(children=f'''
+        Les histogrammes représentent la distribution du nombre total de décès 
+        dus aux catastrophes naturelles.
+    ''', className= 'description_color text-center p-3 marge_top')
+    ])
