@@ -397,8 +397,39 @@ def generate_graph5_content():
         html.H2(children=f'Sankey graph',style={'textAlign': 'center',},
             className= 'subtitle_color'),
         dcc.Graph(figure = fig),
-        html.Div(children=f'''
-        Les histogrammes représentent la distribution du nombre total de décès 
-        dus aux catastrophes naturelles.
-    ''', className= 'description_color text-center p-3 marge_top')
+        dcc.RangeSlider(id='year-slider',
+                        className='RangeSlider',
+                        marks={str(year): str(year) for year in annees if year %10 == 0},
+                        min=min(annees),
+                        max=max(annees),
+                        value=[max(annees)-1, max(annees)],
+                        step=1,
+                        tooltip={"placement":"bottom","always_visible":True}),
+        dcc.Graph(id='sunburst-plot')
+
     ])
+
+# Callback pour mettre à jour le graphique
+@app.callback(
+    Output('sunburst-plot', 'figure'),
+    [Input('year-slider', 'value')]
+)
+def update_treemap_graph_5(selected_years):
+    # Utiliser .loc pour filtrer le DataFrame et éviter SettingWithCopyWarning
+    filtered_df = natural_disaster_df.loc[(natural_disaster_df['Year'] >= selected_years[0]) & (natural_disaster_df['Year'] <= selected_years[1])].copy()
+    
+    # Remplir les valeurs manquantes par des chaînes vides en utilisant .loc
+    for col in ['Disaster Group', 'Disaster Subgroup', 'Disaster Type', 'Disaster Subtype']:
+        filtered_df.loc[:, col] = filtered_df[col].fillna('')
+
+    # Construire des identifiants uniques
+    filtered_df['GroupId'] = filtered_df['Disaster Group']
+    filtered_df['SubgroupId'] = filtered_df['GroupId'] + '-' + filtered_df['Disaster Subgroup']
+    filtered_df['TypeId'] = filtered_df['SubgroupId'] + '-' + filtered_df['Disaster Type']
+    filtered_df['SubtypeId'] = filtered_df['TypeId'] + '-' + filtered_df['Disaster Subtype']
+
+    # Créer le diagramme en soleil
+    fig = px.sunburst(filtered_df, path=['GroupId', 'SubgroupId', 'TypeId', 'SubtypeId'], values='Total Deaths')
+    fig.update_layout(height=1000)
+
+    return fig
