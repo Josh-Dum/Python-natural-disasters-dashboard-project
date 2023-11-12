@@ -4,3 +4,4 @@ dash
 dash-bootstrap-components
 folium
 plotly_express
+seaborn
